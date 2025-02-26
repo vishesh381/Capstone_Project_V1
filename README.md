@@ -1,8 +1,6 @@
 # SkillBridge – A Seamless Hiring Platform
 
-(![image](https://github.com/user-attachments/assets/90a05cfc-0cf3-4b77-937b-7d4dc6eaaeb4)
-![Uploading image.png…]()
-)
+![image](https://github.com/user-attachments/assets/90a05cfc-0cf3-4b77-937b-7d4dc6eaaeb4)
 
 
 ## INTRODUCTION
