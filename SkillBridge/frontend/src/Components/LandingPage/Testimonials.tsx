@@ -3,7 +3,7 @@ import { testimonials } from "../../Data/Data";
 
 const Testimonials = () => {
     return <div className="mt-20 pb-5 p-5 overflow-hidden">
-        <div data-aos="zoom-out" className="text-4xl  md-mx:text-3xl sm-mx:text-2xl xs-mx:text-xl text-center font-semibold mb-3 text-mine-shaft-100">What <span className="text-bright-sun-400">User</span> says about us?</div>
+        <div data-aos="zoom-out" className="text-4xl  md-mx:text-3xl sm-mx:text-2xl xs-mx:text-xl text-center font-semibold mb-3 text-mine-shaft-100">Hear what Our <span className="text-bright-sun-400">Users</span> have to say!</div>
         <div className="flex justify-evenly gap-5 md-mx:flex-wrap mt-10">
         {
             testimonials.map((data, index)=><div data-aos="zoom-in" key={index} className="flex flex-col gap-3 w-[23%] md-mx:w-[48%] xs-mx:w-full border-bright-sun-400 p-3 border rounded-xl">
