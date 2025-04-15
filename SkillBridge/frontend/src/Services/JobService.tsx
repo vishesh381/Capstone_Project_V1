@@ -6,11 +6,17 @@ const postJob=async (job:any)=>{
     .then((result:any) => result.data)
     .catch((error:any) =>{throw error;});
 }
-const getAllJobs=async ()=>{
-    return axiosInstance.get(`/jobs/getAll`)
-    .then((result:any) => result.data)
-    .catch((error:any) =>{throw error;});
-}
+const getAllJobs = async () => {
+    try {
+        const result = await axiosInstance.get(`/jobs/getAll`);
+        console.log("Fetched Jobs:", result.data);
+        return result.data;
+    } catch (error) {
+        console.error("Error fetching jobs:", error);
+        throw error;
+    }
+};
+
 const getJob=async (id:any)=>{
     return axiosInstance.get(`/jobs/get/${id}`)
     .then((result:any) => result.data)

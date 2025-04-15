@@ -6,6 +6,7 @@ import filterReducer from "./Slices/FilterSlice";
 import sortReducer from "./Slices/SortSlice";
 import jwtReducer from "./Slices/JwtSlice";
 import overlayReducer from "./Slices/OverlaySlice";
+import messageReducer from "./Slices/MessageSlice";
 export default configureStore({
     reducer:{
         user:userReducer,
@@ -14,5 +15,6 @@ export default configureStore({
         sort:sortReducer,
         jwt:jwtReducer,
         overlay: overlayReducer,
+        messages: messageReducer
     }
 });

@@ -10,16 +10,10 @@ import { Notifications } from '@mantine/notifications';
 import { Provider } from 'react-redux';
 import Store from './Store';
 import AppRoutes from './Pages/AppRoutes';
-import SignUpPage from './Pages/SignUpPage';
-import Login from './Components/SignUpLogin/Login';
-import SignUp from './Components/SignUpLogin/SignUp';
-import { BrowserRouter } from 'react-router-dom';
-
 // @ts-ignore
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import { useEffect } from 'react';
-import DreamJob from './Components/LandingPage/DreamJob';
 function App() {
   useEffect(()=>{
     AOS.init({
@@ -45,11 +39,7 @@ function App() {
     <Provider store={Store}>
     <MantineProvider defaultColorScheme="dark" theme={theme} >
        <Notifications  position="top-center" zIndex={2001} />
-       {/*<BrowserRouter>  {/* Wrap the routes with BrowserRouter */}
-        {/* <DreamJob/>
-        <SignUpPage/>
-      </BrowserRouter>*/}
-      <AppRoutes />
+      <AppRoutes/>
     </MantineProvider>
     </Provider>
   );

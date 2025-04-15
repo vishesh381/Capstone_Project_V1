@@ -42,6 +42,7 @@ const Sort=(props:any)=> {
         </Combobox.Target>
 
         <Combobox.Dropdown>
+          <h1>{options}</h1>
           <Combobox.Options>{options}</Combobox.Options>
         </Combobox.Dropdown>
       </Combobox>

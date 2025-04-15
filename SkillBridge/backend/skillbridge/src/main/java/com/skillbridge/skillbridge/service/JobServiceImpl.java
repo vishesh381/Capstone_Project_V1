@@ -3,8 +3,10 @@ package com.skillbridge.skillbridge.service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import com.skillbridge.skillbridge.dto.ApplicantDTO;
@@ -17,7 +19,11 @@ import com.skillbridge.skillbridge.entity.Applicant;
 import com.skillbridge.skillbridge.entity.Job;
 import com.skillbridge.skillbridge.exception.JobPortalException;
 import com.skillbridge.skillbridge.repository.JobRepository;
+import com.skillbridge.skillbridge.repository.UserRepository;
 import com.skillbridge.skillbridge.utility.Utilities;
+import com.skillbridge.skillbridge.entity.User;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 
 @Service("jobService")
 public class JobServiceImpl implements JobService {
@@ -26,6 +32,11 @@ public class JobServiceImpl implements JobService {
 	private JobRepository jobRepository;
 	@Autowired
 	private NotificationService notificationService;
+	@Autowired
+private JavaMailSender mailSender;
+
+@Autowired
+private UserRepository userRepository;
 
 	@Override
 	public JobDTO postJob(JobDTO jobDTO) throws JobPortalException {
@@ -59,16 +70,46 @@ public class JobServiceImpl implements JobService {
 	}
 
 	@Override
-	public void applyJob(Long id, ApplicantDTO applicantDTO) throws JobPortalException {
-		Job job = jobRepository.findById(id).orElseThrow(() -> new JobPortalException("JOB_NOT_FOUND"));
-		List<Applicant> applicants = job.getApplicants();
-		if (applicants == null)applicants = new ArrayList<>();
-		if (applicants.stream().filter((x) -> x.getApplicantId() == applicantDTO.getApplicantId()).toList().size() > 0)throw new JobPortalException("JOB_APPLIED_ALREADY");
-		applicantDTO.setApplicationStatus(ApplicationStatus.APPLIED);
-		applicants.add(applicantDTO.toEntity());
-		job.setApplicants(applicants);
-		jobRepository.save(job);
-	}
+public void applyJob(Long id, ApplicantDTO applicantDTO) throws JobPortalException {
+    Job job = jobRepository.findById(id).orElseThrow(() -> new JobPortalException("JOB_NOT_FOUND"));
+    List<Applicant> applicants = job.getApplicants();
+    if (applicants == null) applicants = new ArrayList<>();
+    if (applicants.stream().anyMatch(x -> x.getApplicantId().equals(applicantDTO.getApplicantId()))) {
+        throw new JobPortalException("JOB_APPLIED_ALREADY");
+    }
+
+    // Set application status and add applicant
+    applicantDTO.setApplicationStatus(ApplicationStatus.APPLIED);
+    applicants.add(applicantDTO.toEntity());
+    job.setApplicants(applicants);
+    jobRepository.save(job);
+
+    // Fetch user email and send email
+    User user = userRepository.findById(applicantDTO.getApplicantId())
+        .orElseThrow(() -> new JobPortalException("USER_NOT_FOUND"));
+
+    sendJobApplicationEmail(user.getEmail(), user.getName(), job.getJobTitle());
+}
+
+	private void sendJobApplicationEmail(String email, String name, String jobTitle) {
+    try {
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+        helper.setTo(email);
+        helper.setSubject("Job Application Successful");
+
+        String body = "<p>Hi " + name + ",</p>"
+                    + "<p>Thank you for applying to the position of <strong>" + jobTitle + "</strong> on SkillBridge.</p>"
+                    + "<p>We’ve successfully received your application and will keep you updated on the next steps.</p>"
+                    + "<br/><p>Best regards,<br/>SkillBridge Team</p>";
+
+        helper.setText(body, true);
+        mailSender.send(message);
+    } catch (MessagingException e) {
+        e.printStackTrace(); // optional: add logging
+    }
+}
+
 
 	@Override
 	public List<JobDTO> getHistory(Long id, ApplicationStatus applicationStatus) {

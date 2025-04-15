@@ -9,15 +9,18 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
     (config: InternalAxiosRequestConfig) => {
         const token = localStorage.getItem('token');
+        console.log("Token from localStorage:", token); // Debugging
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
+        console.log("Request Headers:", config.headers); // Debugging
         return config;
     },
     (error) => {
         return Promise.reject(error);
     }
-)
+);
+
 
 export const setupResponseInterceptor = (navigate: any, dispatch: any) => {
     axiosInstance.interceptors.response.use(

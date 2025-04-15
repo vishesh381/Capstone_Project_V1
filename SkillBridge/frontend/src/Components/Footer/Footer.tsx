@@ -29,7 +29,7 @@ const Footer = () => {
     </div>
     <Divider/>
     <div data-aos="flip-left"  data-aos-offset="0" className="font-medium text-center p-5">
-        Designed & Developed By <a className="text-bright-sun-400 hover:underline font-semibold " href="https://github.com/AD1206/Capstone_Project">Vishesh Sharma Anvesh Challa Manasa Nelakanti Akash Devulapally</a>
+        Designed & Developed By <a className="text-bright-sun-400 hover:underline font-semibold " href="https://github.com/AD1206/Capstone_Project">Vishesh Sharma</a>
     </div>
     </div>:<></>
 }

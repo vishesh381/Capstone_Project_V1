@@ -60,13 +60,13 @@ const Header = () => {
         {NavLinks()}
         <div className="flex gap-3 items-center">
 
-            {user ? <ProfileMenu /> : <Link to="/login" className="text-mine-shaft-200 hover:text-bright-sun-400 "><Button color="brightSun.4" variant="subtle">Login</Button></Link>}
+        {user ? <ProfileMenu /> : <Link to="/login" className="text-mine-shaft-200 hover:text-bright-sun-400 "><Button color="brightSun.4" variant="subtle">Login</Button></Link>}
             {/* <div className=" bg-mine-shaft-900 p-1.5 rounded-full">
                 <IconSettings stroke={1.5} />
             </div> */}
             {user ? <NotiMenu /> : <></>}
             {
-
+                
             }
             <Burger className="bs:hidden" opened={opened} onClick={open} aria-label="Toggle navigation" />
             <Drawer size="xs" overlayProps={{ backgroundOpacity: 0.5, blur: 4 }} position="right" opened={opened} onClose={close} closeButtonProps={{
