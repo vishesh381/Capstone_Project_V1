@@ -50,7 +50,21 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ senderId, receiverId }) =
       console.error("Message not sent");
     }
   };
+  const formatTimestamp = (timestamp: number) => {
+    const messageDate = new Date(timestamp);
+    const today = new Date();
 
+    // Check if the message is from today
+    if (messageDate.toDateString() === today.toDateString()) {
+      return messageDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    } else {
+      return messageDate.toLocaleDateString([], {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      }) + ' ' + messageDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+  };
   return (
     <Box
       maw={600}
@@ -89,7 +103,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ senderId, receiverId }) =
         >
           {msg.content}
           <Text size="xs" color="dimmed" mt={4}>
-            {new Date(msg.timestamp).toLocaleTimeString()}
+          {formatTimestamp(msg.timestamp)}
           </Text>
         </Box>
       </Box>

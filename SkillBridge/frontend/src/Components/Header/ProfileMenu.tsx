@@ -1,5 +1,6 @@
-import { Menu, rem, Avatar, Switch, Modal } from '@mantine/core';
+import { Menu, rem, Avatar, Switch, Drawer, Box } from '@mantine/core';
 import { openPDF } from '../../Services/Utilities';
+import { useMantineTheme } from "@mantine/core";
 import {
   IconMessageCircle,
   IconLogout2,
@@ -34,7 +35,7 @@ const ProfileMenu = () => {
   const [groupedMessages, setGroupedMessages] = useState<{ [key: string]: Message[] }>({});
   const [activeSenderId, setActiveSenderId] = useState<string | null>(null);
   const [newMessage, setNewMessage] = useState<string>('');
-
+  const theme = useMantineTheme();
   const dispatch = useDispatch();
 
   const handleLogout = () => {
@@ -48,13 +49,11 @@ const ProfileMenu = () => {
 
       const grouped: { [key: string]: Message[] } = {};
       allMessages.forEach((msg) => {
-        // Group received messages
         if (!grouped[msg.senderId]) {
           grouped[msg.senderId] = [];
         }
         grouped[msg.senderId].push(msg);
 
-        // Group sent messages under user.email for reconstruction
         if (msg.senderId === user.email) {
           if (!grouped[user.email]) grouped[user.email] = [];
           grouped[user.email].push(msg);
@@ -78,33 +77,43 @@ const ProfileMenu = () => {
 
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !activeSenderId) return;
-  
+
     const message: Message = {
       senderId: user.email,
       receiverId: activeSenderId,
       content: newMessage.trim(),
       timestamp: Date.now(),
     };
-  
+
     try {
       await sendMessage(message);
-  
-      // Optimistically update the UI only for the active chat
       setGroupedMessages((prev) => {
         const updated = { ...prev };
         const existing = updated[activeSenderId] || [];
-  
         updated[activeSenderId] = [...existing, message];
-  
         return updated;
       });
-  
+
       setNewMessage('');
     } catch (err) {
       console.error('Failed to send message', err);
     }
   };
-  
+  const formatTimestamp = (timestamp: number) => {
+    const messageDate = new Date(timestamp);
+    const today = new Date();
+
+    // Check if the message is from today
+    if (messageDate.toDateString() === today.toDateString()) {
+      return messageDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    } else {
+      return messageDate.toLocaleDateString([], {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      }) + ' ' + messageDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+  };
   return (
     <>
       <Menu shadow="md" width={220} opened={opened} onChange={setOpened}>
@@ -201,84 +210,106 @@ const ProfileMenu = () => {
           </Menu.Item>
         </Menu.Dropdown>
       </Menu>
+      <Drawer
+  opened={chatOpened}
+  onClose={() => {
+    setChatOpened(false);
+    setActiveSenderId(null);
+  }}
+  size="xl"
+  position="right"
+  title="Messages"
+  padding="md"
+  styles={{
+    body: {
+      height: '100%',
+      display: 'flex',
+      flexDirection: 'column',
+    },
+  }}
+>
+  <Box
+    maw="100%" // Ensures Box takes the full width of Drawer
+    h="100%"   // Ensures Box takes the full height of Drawer
+    bg={theme.colors.mineShaft?.[9] || "dark"}
+    p="md"
+    style={{ borderRadius: 12, boxShadow: "0 0 12px rgba(0,0,0,0.5)" }}
+  >
+    <div className="flex h-full">
+      {/* Chat List */}
+      <div className="w-1/2 flex flex-col overflow-y-auto pr-2">
+        {Object.entries(groupedMessages).map(([senderId, messages]) => {
+          if (senderId === user.email) return null;
+          return (
+            <div
+              key={senderId}
+              className={`p-3 cursor-pointer hover:bg-gray-100 ${
+                activeSenderId === senderId ? 'bg-gray-200' : ''
+              }`}
+              onClick={() => openChatWithSender(senderId)}
+            >
+              <h2 className="font-medium text-sm">From: {senderId}</h2>
+              <p className="text-xs text-gray-500 truncate">
+                {messages[messages.length - 1]?.content}
+              </p>
+            </div>
+          );
+        })}
+      </div>
 
-      {/* Chat Inbox Modal */}
-      <Modal opened={chatOpened} onClose={() => setChatOpened(false)} size="lg" title="Inbox">
-        {Object.keys(groupedMessages).length === 0 ? (
-          <p>No messages found.</p>
-        ) : (
-          <div className="space-y-4">
-            {Object.entries(groupedMessages).map(([senderId, messages]) => {
-              if (senderId === user.email) return null; // Skip user's own sent list in inbox
-              return (
+      {/* Active Chat */}
+      <div className="w-1/2 flex flex-col overflow-hidden">
+        {activeSenderId ? (
+          <>
+            <div className="flex-1 overflow-y-auto p-3 space-y-2 border-l">
+              {groupedMessages[activeSenderId]?.map((msg, index) => (
                 <div
-                  key={senderId}
-                  className="border rounded p-2 shadow-sm cursor-pointer"
-                  onClick={() => openChatWithSender(senderId)}
+                  key={index}
+                  className={`flex ${msg.senderId === user.email ? 'justify-end' : 'justify-start'}`}
                 >
-                  <h2 className="font-bold text-md mb-1">From: {senderId}</h2>
-                  <ul className="text-sm space-y-1 max-h-40 overflow-y-auto">
-                    {messages.map((msg, index) => (
-                      <li key={index} className="text-gray-700 border-b pb-1">
-                        {msg.content}{' '}
-                        <span className="text-xs text-gray-400">
-                          ({new Date(msg.timestamp).toLocaleString()})
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
+                  <div
+                    className={`max-w-[70%] p-2 rounded-lg ${
+                      msg.senderId === user.email ? 'bg-blue-500 text-white' : 'bg-gray-100'
+                    }`}
+                  >
+                    <p className="text-sm">{msg.content}</p>
+                    <span className="text-xs text-gray-500">
+                    {formatTimestamp(msg.timestamp)}
+</span>
+
+                  </div>
                 </div>
-              );
-            })}
+              ))}
+            </div>
+
+            {/* Input */}
+            <div className="p-3 border-t flex gap-2">
+              <input
+                type="text"
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                placeholder="Type a message"
+                className="flex-1 p-2 border rounded"
+              />
+              <button
+                onClick={handleSendMessage}
+                className="bg-blue-600 text-white px-4 rounded hover:bg-blue-700"
+              >
+                Send
+              </button>
+            </div>
+          </>
+        ) : (
+          <div className="flex-1 flex items-center justify-center text-gray-400 border-l">
+            Select a chat to start messaging
           </div>
         )}
-      </Modal>
+      </div>
+    </div>
+  </Box>
+</Drawer>
 
-      {/* Chat Window Modal */}
-      {activeSenderId && (
-        <Modal
-          opened={true}
-          onClose={() => setActiveSenderId(null)}
-          size="lg"
-          title={`Chat with ${activeSenderId}`}
-        >
-          <div className="space-y-4 max-h-[60vh] overflow-y-auto">
-            {groupedMessages[activeSenderId]?.map((msg, index) => (
-              <div
-                key={index}
-                className={`flex ${msg.senderId === user.email ? 'justify-end' : 'justify-start'}`}
-              >
-                <div
-                  className={`max-w-[70%] p-2 rounded-lg ${
-                    msg.senderId === user.email ? 'bg-blue-500 text-white' : 'bg-gray-200'
-                  }`}
-                >
-                  <p>{msg.content}</p>
-                  <span className="text-xs text-gray-400">
-                    ({new Date(msg.timestamp).toLocaleString()})
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
 
-          <div className="flex items-center gap-2 mt-4">
-            <input
-              type="text"
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-              placeholder="Type a message"
-              className="p-2 border rounded-lg flex-1"
-            />
-            <button
-              onClick={handleSendMessage}
-              className="bg-blue-500 text-white px-4 py-2 rounded-lg"
-            >
-              Send
-            </button>
-          </div>
-        </Modal>
-      )}
     </>
   );
 };
