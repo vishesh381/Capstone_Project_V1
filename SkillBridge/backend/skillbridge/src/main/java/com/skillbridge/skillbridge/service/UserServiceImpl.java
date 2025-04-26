@@ -25,6 +25,7 @@ import com.skillbridge.skillbridge.repository.NotificationRepository;
 import com.skillbridge.skillbridge.repository.OTPRepository;
 import com.skillbridge.skillbridge.repository.UserRepository;
 import com.skillbridge.skillbridge.utility.Data;
+import com.skillbridge.skillbridge.utility.EmailBody;
 import com.skillbridge.skillbridge.utility.Utilities;
 
 import jakarta.mail.MessagingException;
@@ -89,7 +90,17 @@ public class UserServiceImpl implements UserService {
 		mailSender.send(mm);
 		return true;
 	}
-	
+	@Override
+	public Boolean sendEmail(String email) throws Exception {
+		User user=userRepository.findByEmail(email).orElseThrow(() -> new JobPortalException("USER_NOT_FOUND"));
+		MimeMessage mm = mailSender.createMimeMessage();
+		MimeMessageHelper message = new MimeMessageHelper(mm, true);
+		message.setTo(email);
+		message.setSubject("Welcome");
+		message.setText(EmailBody.getMessageBody(user.getName()), true);
+		mailSender.send(mm);
+		return true;
+	}
 
 	@Override
 	public Boolean verifyOtp(String email, String otp) throws JobPortalException {
@@ -126,5 +137,4 @@ public class UserServiceImpl implements UserService {
 	public UserDTO getUserByEmail(String email) throws JobPortalException {
 		return userRepository.findByEmail(email).orElseThrow(() -> new JobPortalException("USER_NOT_FOUND")).toDTO();
 	}
-
 }

@@ -4,15 +4,23 @@ import AboutComp from "./AboutComp";
 import { useParams } from "react-router-dom";  // Import useParams
 import CompanyJobs from "./CompanyJobs";
 import CompanyEmployees from "./CompanyEmployees";
-
+import { companyData } from "../../Data/Company";
 const Company = () => {
-    const companyName = localStorage.getItem("companyName") || "Google";
+    const companyFromStorage = localStorage.getItem("companyName") || "Google";
+  const allowedCompanies = Object.keys(companyData) as (keyof typeof companyData)[];
+
+  const companyName: keyof typeof companyData = allowedCompanies.includes(companyFromStorage as keyof typeof companyData)
+    ? (companyFromStorage as keyof typeof companyData)
+    : "Google";
+    // Get the headquarters location from company data
+  const headquartersLocation = companyData[companyName].Headquarters;
+
     console.log("companyName++",companyName)
     const section=["About", "Jobs", "Employees"]
     return <div className="w-3/4">
         <div className="relative">
             <img className="rounded-t-2xl " src="/Profile/banner.jpg" alt="" />
-            <img className="w-36 h-36 border-mine-shaft-950 p-2 bg-mine-shaft-950 border-8 absolute -bottom-1/4 left-5 rounded-3xl" src="/Icons/Google.png" alt="" />
+            <img className="w-36 h-36 border-mine-shaft-950 p-2 bg-mine-shaft-950 border-8 absolute -bottom-1/4 left-5 rounded-3xl"  src={"/Icons/" + companyName + ".png"} alt={companyName} />
         </div>
         <div className="px-7 mt-12">
             <div className="text-3xl font-semibold flex justify-between">{companyName} <Avatar.Group >
@@ -22,7 +30,7 @@ const Company = () => {
                 <Avatar className="[&>span]:!text-xs">+10k</Avatar>
             </Avatar.Group></div>
             <div className="text-lg flex gap-1 items-center text-mine-shaft-300">
-                <IconMapPin className="h-5 w-5" stroke={1.5} /> New York, United States
+                <IconMapPin className="h-5 w-5" stroke={1.5} /> {headquartersLocation}
             </div>
         </div>
         <Divider my="xl"/>
@@ -37,16 +45,16 @@ const Company = () => {
 
                 </Tabs.List>
                 <Tabs.Panel value="about">
-                    <AboutComp/>
+                    <AboutComp companyName={companyName}/>
                 </Tabs.Panel>
 
                 <Tabs.Panel value="jobs">
-                    <CompanyJobs/>
-                </Tabs.Panel>
+  <CompanyJobs companyName={companyName} />
+</Tabs.Panel>
 
-                <Tabs.Panel value="employees">
-                    <CompanyEmployees/>
-                </Tabs.Panel>
+<Tabs.Panel value="employees">
+  <CompanyEmployees companyName={companyName} />
+</Tabs.Panel>
             </Tabs>
         </div>
     </div>

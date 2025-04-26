@@ -95,6 +95,17 @@ const jobList = [
       package: "42 LPA",
       postedDaysAgo: 7,
       description: "Apple is seeking an iOS Developer to join our team in Cupertino. You will work on developing cutting-edge applications for iOS devices, ensuring high performance and an exceptional user experience."
+    },
+    {
+      jobTitle: "IT Support",
+      company: "PaceUniversity",
+      applicants: 30,
+      experience: "Intermediate",
+      jobType: "Full-Time",
+      location: "New York",
+      package: "100 LPA",
+      postedDaysAgo: 5,
+      description: "PaceUniversity is seeking an IT Support specialist to join our team in New York. You will work on supporting cutting-edge applications for our Pace Portal, ensuring high performance and an exceptional user experience."
     }
   ];
 

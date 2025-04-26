@@ -16,7 +16,11 @@ const sendOtp=async (email:string)=>{
         .then((result:any) => result.data)
         .catch((error:any) =>{throw error;});
 }
-
+const sendEmail=async (email:string)=>{
+    return axiosInstance.post(`/users/sendEmail/${email}`)
+        .then((result:any) => result.data)
+        .catch((error:any) =>{throw error;});
+}
 const verifyOtp=async (email:string, otp:string)=>{
     return axiosInstance.get(`/users/verifyOtp/${email}/${otp}`)
         .then((result:any) => result.data)
@@ -29,4 +33,10 @@ const resetPassword=async (email:string, password:string)=>{
         .catch((error:any) =>{throw error;});
 }
 
-export {registerUser, loginUser, sendOtp, verifyOtp, resetPassword};
+const getUserByEmail = async (email: string) => {
+    return axiosInstance.get(`/users/email/${email}`)
+      .then((result: any) => result.data)
+      .catch((error: any) => { throw error; });
+  };
+
+export {registerUser, loginUser, sendOtp, verifyOtp, resetPassword,getUserByEmail,sendEmail};

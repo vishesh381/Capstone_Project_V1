@@ -49,9 +49,23 @@ public class UserAPI {
 		ResponseDTO response=new ResponseDTO("OTP sent successfully.");
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
+	@PostMapping("/sendEmail/{email}")
+	public ResponseEntity<ResponseDTO>sendEmail(@PathVariable @Email(message="{user.email.invalid}")  String email) throws Exception{
+		userService.sendEmail(email);
+		ResponseDTO response=new ResponseDTO("Email sent successfully.");
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
 	@GetMapping("/verifyOtp/{email}/{otp}")
 	public ResponseEntity<ResponseDTO>verifyOtp(@PathVariable @NotBlank(message="{user.email.absent}") @Email(message="{user.email.invalid}")  String email, @PathVariable @Pattern(regexp = "^[0-9]{6}$", message = "{otp.invalid}") String otp) throws JobPortalException{
 		userService.verifyOtp(email, otp);
 		return new ResponseEntity<>(new ResponseDTO("OTP has been verified."), HttpStatus.ACCEPTED);
 	}
+	@GetMapping("/email/{email}")
+public ResponseEntity<UserDTO> getUserByEmail(
+    @PathVariable @Email(message="{user.email.invalid}") String email
+) throws JobPortalException {
+    UserDTO user = userService.getUserByEmail(email);
+    return new ResponseEntity<>(user, HttpStatus.OK);
+}
+
 }

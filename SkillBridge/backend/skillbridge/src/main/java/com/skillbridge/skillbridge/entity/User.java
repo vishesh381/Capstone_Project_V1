@@ -25,7 +25,10 @@ public class User {
 	private String password;
 	private AccountType accountType;
 	private Long profileId;
-
+	// Getter method for id
+    public Long getId() {
+        return this.id;
+    }
 	public UserDTO toDTO() {
 		return new UserDTO(this.id, this.name, this.email, this.password, this.accountType, this.profileId);
 	}

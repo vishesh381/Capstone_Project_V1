@@ -1,19 +1,64 @@
 import { companyData } from "../../Data/Company";
 
-
-const AboutComp = () => {
-    const company:{ [key: string]: any }=companyData;
-    return <div className="flex flex-col gap-5">
-        {
-            Object.keys(company).map((key, index) =>key!="Name"&& <div key={index}>
-            <div className="text-xl mb-3 font-semibold">{key}</div>
-            {key!="Website" && <div className="text-sm text-mine-shaft-300 text-justify">
-                {key!="Specialties"?company[key]:company[key].map((item: string, index: number) => <span key={index}> &bull; {item}</span>)}
-                </div>}
-            {key=="Website" && <a target="_blank" href={company[key]} className="text-sm text-bright-sun-400 hover:text-bright-sun-300">{company[key]}</a>}
-        </div> )
-        }
-        
-    </div>
+interface CompanyInfo {
+  Name: string;
+  Overview: string;
+  Industry: string;
+  Website: string;
+  Size: string;
+  Headquarters: string;
+  Specialties: string[];
 }
+
+interface AboutCompProps {
+  companyName: keyof typeof companyData;
+}
+
+const fieldsToShow: (keyof CompanyInfo)[] = [
+  "Overview",
+  "Industry",
+  "Website",
+  "Size",
+  "Headquarters",
+  "Specialties",
+];
+
+const AboutComp = ({ companyName }: AboutCompProps) => {
+  const company = companyData[companyName];
+
+  if (!company) {
+    return <div>Company not found.</div>;
+  }
+
+  return (
+    <div className="flex flex-col gap-5">
+      {fieldsToShow.map((field, index) => (
+        <div key={index}>
+          <div className="text-xl mb-3 font-semibold">{field}</div>
+
+          {field === "Website" ? (
+            <a
+              target="_blank"
+              href={company[field]}
+              className="text-sm text-bright-sun-400 hover:text-bright-sun-300"
+            >
+              {company[field]}
+            </a>
+          ) : field === "Specialties" ? (
+            <div className="text-sm text-mine-shaft-300 text-justify">
+              {(company[field] as string[]).map((item, idx) => (
+                <span key={idx}> &bull; {item}</span>
+              ))}
+            </div>
+          ) : (
+            <div className="text-sm text-mine-shaft-300 text-justify">
+              {company[field]}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+};
+
 export default AboutComp;

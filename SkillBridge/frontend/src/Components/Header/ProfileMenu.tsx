@@ -1,6 +1,7 @@
 import { Menu, rem, Avatar, Switch, Drawer, Box } from '@mantine/core';
 import { openPDF } from '../../Services/Utilities';
 import { useMantineTheme } from "@mantine/core";
+import { getUserByEmail } from '../../Services/UserService';
 import {
   IconMessageCircle,
   IconLogout2,
@@ -10,7 +11,7 @@ import {
   IconMoonStars,
   IconMoon,
 } from '@tabler/icons-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { removeUser } from '../../Slices/UserSlice';
@@ -42,7 +43,29 @@ const ProfileMenu = () => {
     dispatch(removeUser());
     dispatch(removeJwt());
   };
+  const [userNames, setUserNames] = useState<{ [email: string]: string }>({});
 
+  useEffect(() => {
+    const fetchNames = async () => {
+      const senderEmails = Object.keys(groupedMessages).filter(email => email !== user.email);
+      const uniqueEmails = Array.from(new Set(senderEmails)); // makes it a normal array
+  
+      uniqueEmails.forEach(async (email) => {
+        if (!userNames[email]) {
+          try {
+            const userDetails = await getUserByEmail(email); // fetch user object
+            console.log("userDetails+++"+userDetails.name);
+            setUserNames((prev) => ({ ...prev, [email]: userDetails.name }));
+          } catch (err) {
+            console.error("Failed to fetch user for email:", email);
+          }
+        }
+      });
+    };
+  
+    fetchNames();
+  }, [groupedMessages]);
+  
   const openChatModal = async () => {
     try {
       const allMessages: Message[] = await getReceiverChat(user.email);
@@ -238,24 +261,27 @@ const ProfileMenu = () => {
     <div className="flex h-full">
       {/* Chat List */}
       <div className="w-1/2 flex flex-col overflow-y-auto pr-2">
-        {Object.entries(groupedMessages).map(([senderId, messages]) => {
-          if (senderId === user.email) return null;
-          return (
-            <div
-              key={senderId}
-              className={`p-3 cursor-pointer hover:bg-gray-100 ${
-                activeSenderId === senderId ? 'bg-gray-200' : ''
-              }`}
-              onClick={() => openChatWithSender(senderId)}
-            >
-              <h2 className="font-medium text-sm">From: {senderId}</h2>
-              <p className="text-xs text-gray-500 truncate">
-                {messages[messages.length - 1]?.content}
-              </p>
-            </div>
-          );
-        })}
+  {Object.entries(groupedMessages).map(([senderId, messages]) => {
+    if (senderId === user.email) return null;
+    const name = userNames[senderId] || senderId;
+
+    return (
+      <div
+        key={senderId}
+        className={`p-3 cursor-pointer hover:bg-gray-100 ${
+          activeSenderId === senderId ? 'bg-gray-200' : ''
+        }`}
+        onClick={() => openChatWithSender(senderId)}
+      >
+        <h2 className="font-medium text-sm">From: {name}</h2>
+        <p className="text-xs text-gray-500 truncate">
+          {messages[messages.length - 1]?.content}
+        </p>
       </div>
+    );
+  })}
+</div>
+
 
       {/* Active Chat */}
       <div className="w-1/2 flex flex-col overflow-hidden">
@@ -274,7 +300,7 @@ const ProfileMenu = () => {
                   >
                     <p className="text-sm">{msg.content}</p>
                     <span className="text-xs text-gray-500">
-                    {formatTimestamp(msg.timestamp)}
+  {formatTimestamp(msg.timestamp)}
 </span>
 
                   </div>

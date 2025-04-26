@@ -7,6 +7,7 @@ import JobCategory from "../Components/LandingPage/JobCategory";
 import Subscribe from "../Components/LandingPage/Subscribe";
 import Testimonials from "../Components/LandingPage/Testimonials";
 import Working from "../Components/LandingPage/Working";
+import ResumeBuilder from "../Components/ResumeBuilderPage/ResumeBuilder";
 
 const HomePage=()=>{
     return (
@@ -15,6 +16,7 @@ const HomePage=()=>{
             <Companies/>
             <JobCategory/>
             <Working/>
+            <ResumeBuilder/>
             <Testimonials/>
             <Subscribe/>
         </div>
