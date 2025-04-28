@@ -29,7 +29,7 @@ const getChatHistory = async (senderId: string, receiverId: string) => {
     throw error;
   }
 };
-// New function to get messages for the logged-in receiver
+// Function to get messages for the logged-in receiver
 const getReceiverChat = async (receiverId: string) => {
   try {
     const response = await axiosInstance.get(`/messages/receiverChat/${receiverId}`);

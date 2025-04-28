@@ -14,7 +14,7 @@ function AboutUs() {
                                     backgroundColor: '#5585b5',fontFamily : ' Helvetica',textAlign:"center"
                                     }}
                         >
-                            <b><i> Resume-Builder </i></b>
+                            <b><i>SkillBridge Resume-Builder </i></b>
                         </h1>
                     </Col>
                 </Row>
@@ -28,13 +28,11 @@ function AboutUs() {
                                     textJustify : 'inter-word', }}
                         >
                             <i>
-                                A vibrant selection of eye-catching and professional resume
-                                and cover letter premium templates from Office help you 
-                                stand out from other applicants and leave a lasting impression.
-                                We have some of the best resume templates for job seekers in almost every field.
-                                Our templates are professionally designed, employer-ready, 
-                                ATS-friendly and easy to customize. Choose from dozens of free resume templates, 
-                                then use our Resume Builder to create a professional resume in minutes.
+                            At SkillBridge, we offer a vibrant collection of eye-catching, professional resume and cover letter templates designed to help you stand out and leave a lasting impression.
+
+Our templates are crafted to meet the needs of job seekers across a wide range of industries. They are expertly designed, employer-ready, ATS-friendly, and easy to customize.
+
+Simply choose from dozens of modern templates and use our intuitive Resume Builder to create a professional, polished resume in just minutes.
                             </i>
                         </div>
                     </Col>
