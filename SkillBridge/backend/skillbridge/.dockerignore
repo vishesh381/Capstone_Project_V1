@@ -1,0 +1,12 @@
+!.mvn
+!.mvn/wrapper
+**/*.iml
+*.log
+*.md
+.git
+.gitignore
+Dockerfile
+docker-compose.yml
+.env
+.idea
+.vscode
