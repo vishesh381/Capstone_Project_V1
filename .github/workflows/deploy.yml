@@ -16,14 +16,18 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      - name: Build JAR using Maven
+        working-directory: ./SkillBridge/backend/skillbridge
+        run: mvn clean package -DskipTests
+
       - name: Build and Push Backend
-        working-directory: ./backend/skillbridge
+        working-directory: ./SkillBridge/backend/skillbridge
         run: |
           docker build -t vishesh022/springboot-app:latest .
           docker push vishesh022/springboot-app:latest
 
       - name: Build and Push Frontend
-        working-directory: ./frontend
+        working-directory: ./SkillBridge/frontend
         run: |
           docker build -t vishesh022/react-app:latest .
           docker push vishesh022/react-app:latest
